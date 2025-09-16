@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VENDAS DE CONTAS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --main-color: #ef4444; /* cor inicial vermelho */
+    }
+    body {
+      background-image: url('https://via.placeholder.com/1920x1080?text=BRASIL+ROLEPLAY');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    .bg-overlay {
+      background: rgba(0, 0, 0, 0.6);
+    }
+    .bg-main {
+      background-color: var(--main-color);
+    }
+    .text-main {
+      color: var(--main-color);
+    }
+    .border-main {
+      border-color: var(--main-color);
+    }
+    .price-original {
+      text-decoration: line-through;
+      color: #f87171;
+      margin-right: 0.5rem;
+    }
+    .price-discount {
+      color: #34d399;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body class="min-h-screen font-sans text-white">
+  <!-- Seletor de cores -->
+  <div class="fixed top-4 right-4 flex gap-2 z-50">
+    <button onclick="changeColor('#ef4444')" class="w-6 h-6 rounded-full bg-red-500 border-2 border-white"></button>
+    <button onclick="changeColor('#10b981')" class="w-6 h-6 rounded-full bg-green-500 border-2 border-white"></button>
+    <button onclick="changeColor('#3b82f6')" class="w-6 h-6 rounded-full bg-blue-500 border-2 border-white"></button>
+  </div>
+
+  <div class="bg-overlay min-h-screen">
+    <header class="max-w-6xl mx-auto p-4 flex items-center justify-between">
+      <h1 class="text-2xl font-bold text-main" id="siteTitle">VENDAS DE CONTAS</h1>
+      <div class="flex items-center gap-3">
+        <button id="editBtn" class="px-4 py-2 rounded-lg bg-white/20 backdrop-blur-sm border-main">Editar site</button>
+        <button id="resetBtn" class="px-3 py-2 rounded-lg bg-white/10 border-main">Restaurar</button>
+      </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto p-6">
+      <section class="bg-white/10 rounded-2xl p-8 mb-8 grid md:grid-cols-2 gap-6 items-center">
+        <div>
+          <h2 class="text-4xl font-extrabold text-main" id="heroTitle">Promoções Quentes pra Você</h2>
+          <p class="mt-3 text-lg" id="heroSubtitle">Frete rápido • Garantia • Produtos selecionados</p>
+          <div class="mt-6">
+            <a href="#produtos" class="inline-block px-6 py-3 rounded-lg font-semibold bg-main text-black">Ver produtos</a>
+          </div>
+        </div>
+        <div class="flex justify-center">
+          <img src="https://via.placeholder.com/420x280?text=Banner" alt="banner" class="rounded-lg shadow-2xl" id="heroImg">
+        </div>
+      </section>
+
+      <section id="produtos">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-2xl font-bold text-main">Produtos em destaque</h3>
+          <button id="addProductBtn" class="px-3 py-2 rounded bg-white/20 border-main">+ Produto</button>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="productGrid">
+        </div>
+      </section>
+
+      <footer class="mt-12 p-6 text-center text-sm bg-white/5 rounded-xl">
+        <p>© <span id="year"></span> VENDAS DE CONTAS — Desenvolvido por você</p>
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    function changeColor(color) {
+      document.documentElement.style.setProperty('--main-color', color);
+    }
+
+    const defaultData = {
+      siteTitle: 'VENDAS DE CONTAS',
+      heroTitle: 'Promoções Quentes pra Você',
+      heroSubtitle: 'Frete rápido • Garantia • Produtos selecionados',
+      products: [
+        { title: 'BRP 1', price: {original: 'R$25,00', discount: 'R$20,00'}, img: 'https://via.placeholder.com/300x200?text=BRASIL+ROLEPLAY' },
+        { title: 'BRP 2', price: {original: 'R$25,00', discount: 'R$20,00'}, img: 'https://via.placeholder.com/300x200?text=BRASIL+ROLEPLAY' },
+        { title: 'BRP 3', price: {original: 'R$25,00', discount: 'R$20,00'}, img: 'https://via.placeholder.com/300x200?text=BRASIL+ROLEPLAY' },
+        { title: 'BRP 4', price: {original: 'R$25,00', discount: 'R$20,00'}, img: 'https://via.placeholder.com/300x200?text=BRASIL+ROLEPLAY' },
+        { title: 'BRP 5', price: {original: 'R$25,00', discount: 'R$20,00'}, img: 'https://via.placeholder.com/300x200?text=BRASIL+ROLEPLAY' },
+      ],
+    };
+
+    let data = JSON.parse(localStorage.getItem('siteData')) || defaultData;
+    const siteTitleEl = document.getElementById('siteTitle');
+    const heroTitleEl = document.getElementById('heroTitle');
+    const heroSubtitleEl = document.getElementById('heroSubtitle');
+    const productGrid = document.getElementById('productGrid');
+    const yearEl = document.getElementById('year');
+    yearEl.textContent = new Date().getFullYear();
+
+    function render() {
+      siteTitleEl.textContent = data.siteTitle;
+      heroTitleEl.textContent = data.heroTitle;
+      heroSubtitleEl.textContent = data.heroSubtitle;
+      productGrid.innerHTML = '';
+      data.products.forEach((p, i) => {
+        const card = document.createElement('div');
+        card.className = 'bg-white/5 rounded-xl p-4';
+        let priceHTML = '';
+        if(typeof p.price === 'object') {
+          priceHTML = `<span class='price-original'>${p.price.original}</span><span class='price-discount'>${p.price.discount}</span>`;
+        } else {
+          priceHTML = `<span class='price-discount'>${p.price}</span>`;
+        }
+        card.innerHTML = `
+          <img src="${p.img}" alt="${p.title}" class="w-full h-40 object-cover rounded-md mb-3">
+          <h4 class="text-lg font-semibold text-main">${p.title}</h4>
+          <p class="mt-2 text-sm">${priceHTML}</p>
+          <div class="mt-3">
+            <button class="px-4 py-2 rounded bg-main text-black font-semibold">Comprar</button>
+          </div>
+        `;
+        productGrid.appendChild(card);
+      });
+      localStorage.setItem('siteData', JSON.stringify(data));
+    }
+
+    render();
+
+    document.getElementById('resetBtn').onclick = () => { data = defaultData; render(); };
+
+    document.getElementById('addProductBtn').onclick = () => {
+      data.products.push({ title: 'Novo produto', price: 'R$ 0,00', img: 'https://via.placeholder.com/300x200?text=Produto' });
+      render();
+    };
+
+    document.getElementById('editBtn').onclick = () => {
+      const newTitle = prompt('Novo título do site:', data.siteTitle);
+      if (newTitle) data.siteTitle = newTitle;
+      const newHeroTitle = prompt('Novo título do banner:', data.heroTitle);
+      if (newHeroTitle) data.heroTitle = newHeroTitle;
+      const newHeroSub = prompt('Novo subtítulo do banner:', data.heroSubtitle);
+      if (newHeroSub) data.heroSubtitle = newHeroSub;
+      render();
+    };
+  </script>
+</body>
+</html>
